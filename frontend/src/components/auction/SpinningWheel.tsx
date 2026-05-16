@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Player } from '../types';
+import { Player } from '../../types';
 
 interface SpinningWheelProps {
   players: Player[];
