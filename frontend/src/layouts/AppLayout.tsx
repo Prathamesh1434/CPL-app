@@ -11,7 +11,7 @@ const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['admin', 'operator', 'viewer', 'captain'] },
   { to: '/live-auction', icon: Gavel, label: 'Live Auction', roles: ['admin', 'operator'] },
   { to: '/captain-live', icon: Gavel, label: 'Live Bidding', roles: ['captain'] },
-  { to: '/live', icon: Radio, label: 'Live Screen', roles: ['admin', 'operator', 'viewer'] },
+  { to: '/live', icon: Radio, label: 'Live Screen', roles: ['admin', 'operator', 'viewer', 'captain'] },
   { to: '/groups', icon: Trophy, label: 'Groups', roles: ['admin'] },
   { to: '/captains', icon: UserCircle, label: 'Captains', roles: ['admin'] },
   { to: '/players', icon: Users, label: 'Players', roles: ['admin'] },

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Gavel, ChevronUp } from 'lucide-react';
+import { Gavel, ChevronUp, History } from 'lucide-react';
 import { useAuctionStore } from '../stores/auctionStore';
 import { useAuthStore } from '../stores/authStore';
 import { socketService } from '../services/socket';
+import api from '../services/api';
+import { AuctionLog } from '../types';
 import toast from 'react-hot-toast';
 import { getNextBids } from '../utils/bidding';
 
@@ -11,16 +13,24 @@ export default function CaptainLivePage() {
   const { user } = useAuthStore();
   const { state, initialize, placeBid, error } = useAuctionStore();
   const [bidAmount, setBidAmount] = useState(0);
+  const [logs, setLogs] = useState<AuctionLog[]>([]);
+
+  const fetchLogs = () => {
+    api.get('/auction/logs').then(res => setLogs(res.data.logs?.slice(0, 10) || [])).catch(() => {});
+  };
 
   useEffect(() => {
     initialize();
+    fetchLogs();
 
     const handleSold = (data: any) => {
       toast.success(`${data.selectedPlayer?.name} SOLD! 🎉`);
+      fetchLogs();
     };
 
     const handleUnsold = (data: any) => {
       toast(`${data.selectedPlayer?.name} went unsold`, { icon: '❌' });
+      fetchLogs();
     };
 
     socketService.on('auction:sold', handleSold);
@@ -52,16 +62,6 @@ export default function CaptainLivePage() {
     placeBid(user.captainId, bidAmount);
   };
 
-  if (state.status === 'idle') {
-    return (
-      <div className="flex flex-col items-center justify-center h-[70vh]">
-        <Gavel className="w-16 h-16 text-gray-600 mb-4 animate-pulse" />
-        <h2 className="text-2xl font-bold text-white mb-2">Auction Not Started</h2>
-        <p className="text-gray-400">Please wait for the operator to start the auction.</p>
-      </div>
-    );
-  }
-
   const isBiddingActive = state.status === 'player_selected' || state.status === 'bidding';
 
   return (
@@ -70,14 +70,24 @@ export default function CaptainLivePage() {
         <h1 className="text-3xl font-bold text-white flex items-center justify-center gap-3">
           <Gavel className="w-8 h-8 text-neon-green" /> Live Bidding
         </h1>
-        <p className="text-gray-400 mt-2">Group: {state.activeGroupName}</p>
+        {state.activeGroupName ? (
+          <p className="text-gray-400 mt-2">Active Group: <span className="text-neon-blue font-semibold">{state.activeGroupName}</span></p>
+        ) : (
+          <p className="text-gray-400 mt-2">Waiting for auction to start...</p>
+        )}
       </div>
 
-      {!state.selectedPlayer ? (
+      {state.status === 'idle' ? (
+        <div className="glass-card p-12 text-center">
+          <Gavel className="w-16 h-16 text-gray-600 mb-4 animate-pulse mx-auto" />
+          <h2 className="text-xl font-bold text-white mb-2">Auction Paused</h2>
+          <p className="text-gray-400">The operator has not started a group yet.</p>
+        </div>
+      ) : !state.selectedPlayer ? (
         <div className="glass-card p-12 text-center">
           <div className="w-16 h-16 rounded-full border-4 border-neon-blue/30 border-t-neon-blue animate-spin mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-white mb-2">Spinning...</h2>
-          <p className="text-gray-400">Waiting for the operator to select the next player.</p>
+          <h2 className="text-xl font-bold text-white mb-2">Selecting Player...</h2>
+          <p className="text-gray-400">Waiting for the wheel to land.</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -131,6 +141,38 @@ export default function CaptainLivePage() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Auction Log for Captain */}
+      {logs.length > 0 && (
+        <div className="glass-card p-6">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <History className="w-5 h-5 text-gray-400" /> Recent Results
+          </h3>
+          <div className="space-y-2">
+            {logs.map(log => (
+              <div key={log.id} className="flex items-center justify-between p-3 rounded-lg bg-surface-300/30 border border-white/5">
+                <div className="flex items-center gap-3">
+                  <div className={`w-2 h-2 rounded-full ${log.action === 'sold' ? 'bg-neon-green' : 'bg-red-400'}`} />
+                  <div>
+                    <p className="text-sm font-medium text-white">{log.player_name}</p>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider">{log.group_name}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  {log.action === 'sold' ? (
+                    <>
+                      <p className="text-neon-green font-bold text-sm">₹{log.price}</p>
+                      <p className="text-[10px] text-gray-400">{log.team_name}</p>
+                    </>
+                  ) : (
+                    <p className="text-red-400 text-xs font-medium uppercase">Unsold</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
