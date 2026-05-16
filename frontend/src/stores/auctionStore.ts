@@ -34,6 +34,7 @@ export const useAuctionStore = create<AuctionStore>((set, get) => ({
   error: null,
 
   initialize: () => {
+    console.log('🔌 Initializing auction socket...');
     socketService.connect();
 
     const handleUpdate = (newState: AuctionState) => {
@@ -60,8 +61,20 @@ export const useAuctionStore = create<AuctionStore>((set, get) => ({
       set({ state: { ...finalState } });
     });
 
-    socketService.on('connect', () => set({ isConnected: true }));
-    socketService.on('disconnect', () => set({ isConnected: false }));
+    socketService.on('connect', () => {
+      console.log('✅ Connected to auction server');
+      set({ isConnected: true, error: null });
+    });
+    
+    socketService.on('disconnect', () => {
+      console.log('❌ Disconnected from auction server');
+      set({ isConnected: false });
+    });
+
+    socketService.on('connect_error', (err) => {
+      console.error('⚠️ Socket connection error:', err.message);
+      set({ error: `Connection failed: ${err.message}` });
+    });
 
     // Request current state
     socketService.emit('auction:state');

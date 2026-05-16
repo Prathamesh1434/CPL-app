@@ -9,6 +9,7 @@ class SocketService {
   connect() {
     if (this.socket?.connected) return;
 
+    console.log(`📡 Connecting to socket at: ${SOCKET_URL || 'window.location.origin'}`);
     this.socket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,

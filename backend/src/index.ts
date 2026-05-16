@@ -15,8 +15,9 @@ const app = express();
 const httpServer = createServer(app);
 
 // CORS
+const origins = env.CLIENT_ORIGIN.split(',').map(o => o.trim());
 app.use(cors({
-  origin: env.CLIENT_ORIGIN,
+  origin: origins,
   credentials: true,
 }));
 
@@ -38,7 +39,7 @@ app.use('/api/analytics', analyticsRoutes);
 // Socket.IO
 const io = new Server(httpServer, {
   cors: {
-    origin: env.CLIENT_ORIGIN,
+    origin: origins,
     methods: ['GET', 'POST'],
     credentials: true,
   },
