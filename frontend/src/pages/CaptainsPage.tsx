@@ -11,7 +11,7 @@ export default function CaptainsPage() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editCaptain, setEditCaptain] = useState<Captain | null>(null);
-  const [form, setForm] = useState({ name: '', team_name: '', purse: 2200, group_id: '' });
+  const [form, setForm] = useState({ name: '', team_name: '', purse: 2200, group_id: '', email: '', password: '' });
 
   const fetchData = async () => {
     try {
@@ -24,8 +24,8 @@ export default function CaptainsPage() {
 
   useEffect(() => { fetchData(); }, []);
 
-  const openAdd = () => { setEditCaptain(null); setForm({ name: '', team_name: '', purse: 2200, group_id: '' }); setShowModal(true); };
-  const openEdit = (c: Captain) => { setEditCaptain(c); setForm({ name: c.name, team_name: c.team_name, purse: c.purse, group_id: c.group_id || '' }); setShowModal(true); };
+  const openAdd = () => { setEditCaptain(null); setForm({ name: '', team_name: '', purse: 2200, group_id: '', email: '', password: '' }); setShowModal(true); };
+  const openEdit = (c: Captain) => { setEditCaptain(c); setForm({ name: c.name, team_name: c.team_name, purse: c.purse, group_id: c.group_id || '', email: '', password: '' }); setShowModal(true); };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,6 +112,17 @@ export default function CaptainsPage() {
                   {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
                 </select>
               </div>
+              {!editCaptain && (
+                <>
+                  <div className="pt-4 border-t border-white/10">
+                    <h3 className="text-sm font-semibold text-neon-blue mb-3">Captain Login Details</h3>
+                    <div className="space-y-4">
+                      <div><label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label><input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="input-field" placeholder="captain@cpl.com" required={!editCaptain} /></div>
+                      <div><label className="block text-sm font-medium text-gray-300 mb-2">Password</label><input type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} className="input-field" placeholder="Create a password" required={!editCaptain} /></div>
+                    </div>
+                  </div>
+                </>
+              )}
               <div className="flex gap-3 justify-end"><button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button><button type="submit" className="btn-primary">{editCaptain ? 'Update' : 'Create'}</button></div>
             </form>
           </motion.div>

@@ -1,4 +1,5 @@
 import { Router, Response } from 'express';
+import bcrypt from 'bcryptjs';
 import { supabase } from '../config/supabase';
 import { authenticate, AuthRequest, requireRole } from '../middleware/auth';
 
@@ -29,15 +30,36 @@ router.get('/', authenticate, async (_req: AuthRequest, res: Response): Promise<
 // POST /api/captains
 router.post('/', authenticate, requireRole('admin'), async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { name, team_name, purse, group_id } = req.body;
+    const { name, team_name, purse, group_id, email, password } = req.body;
     if (!name || !team_name) {
       res.status(400).json({ error: 'Name and team name are required' });
       return;
     }
 
+    let user_id = null;
+    
+    // Create User if email and password are provided
+    if (email && password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const { data: newUser, error: userError } = await supabase
+        .from('users')
+        .insert({ name, email, password: hashedPassword, role: 'captain' })
+        .select()
+        .single();
+        
+      if (userError) {
+        if (userError.code === '23505') {
+          res.status(400).json({ error: 'Email already exists' });
+          return;
+        }
+        throw userError;
+      }
+      user_id = newUser.id;
+    }
+
     const { data, error } = await supabase
       .from('captains')
-      .insert({ name, team_name, purse: purse || 2200, group_id: group_id || null })
+      .insert({ name, team_name, purse: purse || 2200, group_id: group_id || null, user_id })
       .select()
       .single();
 

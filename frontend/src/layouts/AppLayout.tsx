@@ -8,13 +8,14 @@ import { useState } from 'react';
 import { useAuthStore } from '../stores/authStore';
 
 const navItems = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['admin', 'operator', 'viewer'] },
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['admin', 'operator', 'viewer', 'captain'] },
   { to: '/live-auction', icon: Gavel, label: 'Live Auction', roles: ['admin', 'operator'] },
+  { to: '/captain-live', icon: Gavel, label: 'Live Bidding', roles: ['captain'] },
   { to: '/live', icon: Radio, label: 'Live Screen', roles: ['admin', 'operator', 'viewer'] },
   { to: '/groups', icon: Trophy, label: 'Groups', roles: ['admin'] },
   { to: '/captains', icon: UserCircle, label: 'Captains', roles: ['admin'] },
   { to: '/players', icon: Users, label: 'Players', roles: ['admin'] },
-  { to: '/teams', icon: Users, label: 'Teams', roles: ['admin', 'operator', 'viewer'] },
+  { to: '/teams', icon: Users, label: 'Teams', roles: ['admin', 'operator', 'viewer', 'captain'] },
   { to: '/analytics', icon: BarChart3, label: 'Analytics', roles: ['admin'] },
   { to: '/settings', icon: Settings, label: 'Settings', roles: ['admin'] },
 ];

@@ -64,6 +64,16 @@ export default function LiveAuctionPage() {
     spinWheel();
   };
 
+  const getDisplayPlayers = () => {
+    if (state.status === 'group_selected' || isSpinning) return state.wheelPool;
+    if (state.selectedPlayer && spinTarget !== undefined) {
+      const arr = [...state.wheelPool];
+      arr.splice(spinTarget, 0, state.selectedPlayer);
+      return arr;
+    }
+    return state.wheelPool;
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -121,7 +131,7 @@ export default function LiveAuctionPage() {
               </div>
               <div className="flex justify-center">
                 <SpinningWheel
-                  players={state.status === 'group_selected' ? state.wheelPool : (state.selectedPlayer ? [...state.wheelPool, state.selectedPlayer] : state.wheelPool)}
+                  players={getDisplayPlayers()}
                   isSpinning={isSpinning}
                   targetIndex={spinTarget}
                 />

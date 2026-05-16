@@ -4,6 +4,7 @@ import { Gavel, AlertTriangle, ChevronUp, Check, X as XIcon } from 'lucide-react
 import { Captain, Player } from '../../types';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { getNextBids } from '../../utils/bidding';
 
 interface BiddingPanelProps {
   selectedPlayer: Player | null;
@@ -14,8 +15,6 @@ interface BiddingPanelProps {
   onUnsold: () => void;
   status: string;
 }
-
-const INCREMENTS = [50, 100, 200, 500];
 
 export default function BiddingPanel({
   selectedPlayer, currentBid, highestBidder, onBid, onSold, onUnsold, status,
@@ -93,12 +92,12 @@ export default function BiddingPanel({
 
           {/* Increment Buttons */}
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Quick Increment</label>
+            <label className="block text-sm text-gray-400 mb-2">Next Valid Bids</label>
             <div className="grid grid-cols-4 gap-2">
-              {INCREMENTS.map(inc => (
-                <button key={inc} onClick={() => setBidAmount(currentBid + inc)}
+              {getNextBids(currentBid).map(bidVal => (
+                <button key={bidVal} onClick={() => setBidAmount(bidVal)}
                   className="py-2 px-3 bg-surface-300/80 border border-white/10 rounded-lg text-white font-medium hover:border-neon-green/30 hover:bg-surface-200 transition-all text-sm">
-                  <ChevronUp className="w-3 h-3 inline mr-1" />+{inc}
+                  ₹{bidVal}
                 </button>
               ))}
             </div>

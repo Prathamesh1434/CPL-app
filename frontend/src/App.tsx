@@ -12,6 +12,7 @@ import PlayersPage from './pages/PlayersPage';
 import TeamsPage from './pages/TeamsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
+import CaptainLivePage from './pages/CaptainLivePage';
 
 export default function App() {
   return (
@@ -42,6 +43,11 @@ export default function App() {
           <Route path="live-auction" element={
             <ProtectedRoute roles={['admin', 'operator']}>
               <LiveAuctionPage />
+            </ProtectedRoute>
+          } />
+          <Route path="captain-live" element={
+            <ProtectedRoute roles={['captain']}>
+              <CaptainLivePage />
             </ProtectedRoute>
           } />
           <Route path="groups" element={

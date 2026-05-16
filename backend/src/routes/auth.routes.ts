@@ -33,8 +33,18 @@ router.post('/login', async (req, res: Response): Promise<void> => {
       return;
     }
 
+    let captainId = null;
+    if (user.role === 'captain') {
+      const { data: captain } = await supabase
+        .from('captains')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+      if (captain) captainId = captain.id;
+    }
+
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role, name: user.name },
+      { id: user.id, email: user.email, role: user.role, name: user.name, captainId },
       env.JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -46,6 +56,7 @@ router.post('/login', async (req, res: Response): Promise<void> => {
         name: user.name,
         email: user.email,
         role: user.role,
+        captainId,
       },
     });
   } catch (err) {
@@ -68,7 +79,17 @@ router.get('/me', authenticate, async (req: AuthRequest, res: Response): Promise
       return;
     }
 
-    res.json({ user });
+    let captainId = null;
+    if (user.role === 'captain') {
+      const { data: captain } = await supabase
+        .from('captains')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+      if (captain) captainId = captain.id;
+    }
+
+    res.json({ user: { ...user, captainId } });
   } catch (err) {
     res.status(500).json({ error: 'Internal server error' });
   }
