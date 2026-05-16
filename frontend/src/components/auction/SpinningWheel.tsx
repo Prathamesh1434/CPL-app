@@ -106,8 +106,8 @@ export default function SpinningWheel({ players, isSpinning, targetIndex }: Spin
     const segAngle = (2 * Math.PI) / count;
     // Calculate target rotation: multiple full spins + land on target
     const targetRot = targetIndex !== undefined
-      ? -(targetIndex * segAngle) - segAngle / 2 - Math.PI / 2 + Math.PI * 2 * (5 + Math.random() * 3) // 5-8 full spins
-      : Math.PI * 2 * (5 + Math.random() * 3);
+      ? -(targetIndex * segAngle) - segAngle / 2 - Math.PI / 2 + Math.PI * 2 * (10 + Math.floor(Math.random() * 5)) // Precise full spins
+      : Math.PI * 2 * (10 + Math.random() * 5);
 
     const startTime = Date.now();
     const duration = 4500; // 4.5 seconds
