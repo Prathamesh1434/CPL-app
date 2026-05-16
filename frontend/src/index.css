@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --neon-green: #39FF14;
+    --neon-blue: #00f0ff;
+    --neon-purple: #bf00ff;
+    --surface-bg: #0d1321;
+    --surface-card: rgba(30, 41, 59, 0.6);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(57, 255, 20, 0.3) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: rgba(57, 255, 20, 0.3);
+    border-radius: 3px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(57, 255, 20, 0.5);
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-surface-100/60 backdrop-blur-xl border border-white/10 rounded-2xl;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:border-neon-green/30 hover:shadow-lg hover:shadow-neon-green/10;
+  }
+
+  .neon-border {
+    @apply border border-neon-green/30 shadow-[0_0_15px_rgba(57,255,20,0.15)];
+  }
+
+  .neon-text {
+    @apply text-neon-green drop-shadow-[0_0_10px_rgba(57,255,20,0.5)];
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 bg-gradient-to-r from-neon-green/90 to-emerald-500/90 text-black font-semibold rounded-xl 
+           transition-all duration-300 hover:shadow-lg hover:shadow-neon-green/30 hover:scale-[1.02] 
+           active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-surface-200/80 border border-white/10 text-white font-medium rounded-xl 
+           transition-all duration-300 hover:border-neon-blue/30 hover:bg-surface-100/80
+           active:scale-[0.98];
+  }
+
+  .btn-danger {
+    @apply px-6 py-3 bg-red-500/20 border border-red-500/30 text-red-400 font-medium rounded-xl 
+           transition-all duration-300 hover:bg-red-500/30 hover:border-red-500/50
+           active:scale-[0.98];
+  }
+
+  .btn-sold {
+    @apply px-8 py-4 bg-gradient-to-r from-neon-green to-emerald-500 text-black font-bold text-lg rounded-xl 
+           transition-all duration-300 hover:shadow-xl hover:shadow-neon-green/40 hover:scale-[1.03] 
+           active:scale-[0.98];
+  }
+
+  .btn-unsold {
+    @apply px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white font-bold text-lg rounded-xl 
+           transition-all duration-300 hover:shadow-xl hover:shadow-red-500/40 hover:scale-[1.03] 
+           active:scale-[0.98];
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-surface-300/80 border border-white/10 rounded-xl text-white placeholder-gray-500
+           focus:outline-none focus:border-neon-green/50 focus:ring-1 focus:ring-neon-green/30
+           transition-all duration-200;
+  }
+
+  .stat-card {
+    @apply glass-card p-6 relative overflow-hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    @apply absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-neon-green/50 to-transparent;
+  }
+
+  .table-row {
+    @apply border-b border-white/5 hover:bg-white/5 transition-colors duration-150;
+  }
+
+  .badge {
+    @apply px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider;
+  }
+
+  .badge-sold {
+    @apply badge bg-neon-green/20 text-neon-green border border-neon-green/30;
+  }
+
+  .badge-unsold {
+    @apply badge bg-yellow-500/20 text-yellow-400 border border-yellow-500/30;
+  }
+
+  .badge-live {
+    @apply badge bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse-neon;
+  }
+}
+
+/* Wheel styles */
+.wheel-container {
+  filter: drop-shadow(0 0 30px rgba(57, 255, 20, 0.3));
+}
+
+.wheel-pointer {
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+}
+
+/* Live page specific */
+.live-bg {
+  background: radial-gradient(ellipse at center, rgba(57, 255, 20, 0.05) 0%, transparent 70%),
+              radial-gradient(ellipse at top right, rgba(0, 240, 255, 0.03) 0%, transparent 50%),
+              #0d1321;
+}
