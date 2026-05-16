@@ -11,7 +11,7 @@ class SocketService {
 
     console.log(`📡 Connecting to socket at: ${SOCKET_URL || 'window.location.origin'}`);
     this.socket = io(SOCKET_URL, {
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'], // Try polling first for better compatibility
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,

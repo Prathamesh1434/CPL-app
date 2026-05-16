@@ -2,13 +2,16 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Edit2, Trash2, Users, X, Search, Upload } from 'lucide-react';
 import api from '../services/api';
+import { useAuthStore } from '../stores/authStore';
 import { Player, Group } from '../types';
 import toast from 'react-hot-toast';
 
 export default function PlayersPage() {
+  const { user } = useAuthStore();
   const [players, setPlayers] = useState<Player[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
+  const isAdmin = user?.role === 'admin';
   const [showModal, setShowModal] = useState(false);
   const [showBulk, setShowBulk] = useState(false);
   const [editPlayer, setEditPlayer] = useState<Player | null>(null);
@@ -66,10 +69,12 @@ export default function PlayersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div><h1 className="text-3xl font-bold text-white">Players</h1><p className="text-gray-400 mt-1">Manage player pool</p></div>
-        <div className="flex gap-2">
-          <button onClick={() => setShowBulk(true)} className="btn-secondary flex items-center gap-2"><Upload className="w-4 h-4" /> Bulk Add</button>
-          <button onClick={() => { setEditPlayer(null); setForm({ name: '', role: 'Batsman', group_id: '', base_price: 100 }); setShowModal(true); }} className="btn-primary flex items-center gap-2"><Plus className="w-5 h-5" /> Add Player</button>
-        </div>
+        {isAdmin && (
+          <div className="flex gap-2">
+            <button onClick={() => setShowBulk(true)} className="btn-secondary flex items-center gap-2"><Upload className="w-4 h-4" /> Bulk Add</button>
+            <button onClick={() => { setEditPlayer(null); setForm({ name: '', role: 'Batsman', group_id: '', base_price: 100 }); setShowModal(true); }} className="btn-primary flex items-center gap-2"><Plus className="w-5 h-5" /> Add Player</button>
+          </div>
+        )}
       </div>
 
       {/* Filters */}
@@ -104,7 +109,7 @@ export default function PlayersPage() {
                 <th className="text-left p-4 text-sm font-medium text-gray-400">Status</th>
                 <th className="text-left p-4 text-sm font-medium text-gray-400">Sold To</th>
                 <th className="text-left p-4 text-sm font-medium text-gray-400">Price</th>
-                <th className="text-right p-4 text-sm font-medium text-gray-400">Actions</th>
+                {isAdmin && <th className="text-right p-4 text-sm font-medium text-gray-400">Actions</th>}
               </tr></thead>
               <tbody>
                 {filtered.map((player, i) => (
@@ -116,12 +121,14 @@ export default function PlayersPage() {
                     <td className="p-4"><span className={player.status === 'sold' ? 'badge-sold' : 'badge-unsold'}>{player.status}</span></td>
                     <td className="p-4 text-gray-300">{player.sold_to_team || '—'}</td>
                     <td className="p-4 text-neon-green font-medium">{player.sold_price ? `₹${player.sold_price}` : '—'}</td>
-                    <td className="p-4 text-right">
-                      <div className="flex gap-1 justify-end">
-                        <button onClick={() => { setEditPlayer(player); setForm({ name: player.name, role: player.role, group_id: player.group_id || '', base_price: player.base_price }); setShowModal(true); }} className="p-2 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white"><Edit2 className="w-4 h-4" /></button>
-                        <button onClick={() => handleDelete(player.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
-                      </div>
-                    </td>
+                    {isAdmin && (
+                      <td className="p-4 text-right">
+                        <div className="flex gap-1 justify-end">
+                          <button onClick={() => { setEditPlayer(player); setForm({ name: player.name, role: player.role, group_id: player.group_id || '', base_price: player.base_price }); setShowModal(true); }} className="p-2 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white"><Edit2 className="w-4 h-4" /></button>
+                          <button onClick={() => handleDelete(player.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      </td>
+                    )}
                   </motion.tr>
                 ))}
               </tbody>
