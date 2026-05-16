@@ -45,6 +45,11 @@ export const useAuctionStore = create<AuctionStore>((set, get) => ({
       setTimeout(() => set({ error: null }), 5000);
     };
 
+    // Clear existing to prevent accumulation
+    socketService.off('auction:update', handleUpdate);
+    socketService.off('auction:state', handleUpdate);
+    socketService.off('auction:error', handleError);
+    
     socketService.on('auction:update', handleUpdate);
     socketService.on('auction:state', handleUpdate);
     socketService.on('auction:error', handleError);
@@ -55,9 +60,12 @@ export const useAuctionStore = create<AuctionStore>((set, get) => ({
       set({ state: { ...finalState } });
     });
 
+    socketService.on('connect', () => set({ isConnected: true }));
+    socketService.on('disconnect', () => set({ isConnected: false }));
+
     // Request current state
     socketService.emit('auction:state');
-    set({ isConnected: true });
+    set({ isConnected: socketService.isConnected });
   },
 
   cleanup: () => {

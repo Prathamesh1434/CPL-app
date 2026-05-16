@@ -9,11 +9,14 @@ export function registerAuctionHandlers(io: Server, socket: Socket) {
 
   // Start auction for a group
   socket.on('auction:start', async (data: { groupId: string }) => {
+    console.log(`[Socket] auction:start received for group: ${data.groupId}`);
     try {
       const state = await auctionEngine.startAuction(data.groupId);
       io.emit('auction:update', state);
       io.emit('auction:start', state);
+      console.log(`[Socket] Auction started successfully for ${state.activeGroupName}`);
     } catch (err: any) {
+      console.error(`[Socket] auction:start error: ${err.message}`);
       socket.emit('auction:error', { message: err.message });
     }
   });

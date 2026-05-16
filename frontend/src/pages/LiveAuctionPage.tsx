@@ -10,7 +10,7 @@ import { Group, AuctionLog } from '../types';
 import toast from 'react-hot-toast';
 
 export default function LiveAuctionPage() {
-  const { state, initialize, cleanup, startAuction, spinWheel, placeBid, markSold, markUnsold, resetAuction, error } = useAuctionStore();
+  const { state, isConnected, initialize, cleanup, startAuction, spinWheel, placeBid, markSold, markUnsold, resetAuction, error } = useAuctionStore();
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroup, setSelectedGroup] = useState('');
   const [isSpinning, setIsSpinning] = useState(false);
@@ -55,11 +55,13 @@ export default function LiveAuctionPage() {
   }, [error]);
 
   const handleStartAuction = () => {
+    if (!isConnected) { toast.error('Auction server disconnected. Reconnecting...'); initialize(); return; }
     if (!selectedGroup) { toast.error('Select a group first'); return; }
     startAuction(selectedGroup);
   };
 
   const handleSpin = () => {
+    if (!isConnected) { toast.error('Auction server disconnected'); return; }
     if (state.wheelPool.length === 0) { toast.error('No players left'); return; }
     spinWheel();
   };
@@ -81,10 +83,21 @@ export default function LiveAuctionPage() {
           <h1 className="text-3xl font-bold text-white flex items-center gap-3">
             <Gavel className="w-8 h-8 text-neon-green" /> Live Auction
           </h1>
-          <p className="text-gray-400 mt-1">
-            {state.activeGroupName ? `Active: ${state.activeGroupName}` : 'Select a group to start'}
-            {state.wheelPool.length > 0 && ` • ${state.wheelPool.length} players remaining`}
-          </p>
+          <div className="flex items-center gap-2 mt-1">
+            {isConnected ? (
+              <span className="flex items-center gap-1.5 text-xs text-neon-green bg-neon-green/10 px-2 py-0.5 rounded-full border border-neon-green/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse" /> Live
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5 text-xs text-red-400 bg-red-400/10 px-2 py-0.5 rounded-full border border-red-400/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-400" /> Disconnected
+              </span>
+            )}
+            <p className="text-gray-400">
+              {state.activeGroupName ? `Active: ${state.activeGroupName}` : 'Select a group to start'}
+              {state.wheelPool.length > 0 && ` • ${state.wheelPool.length} players remaining`}
+            </p>
+          </div>
         </div>
         <div className="flex gap-2">
           {state.status !== 'idle' && (
