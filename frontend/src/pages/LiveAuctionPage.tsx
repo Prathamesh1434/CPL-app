@@ -158,6 +158,7 @@ export default function LiveAuctionPage() {
               selectedPlayer={state.selectedPlayer}
               currentBid={state.currentBid}
               highestBidder={state.highestBidder}
+              outCaptains={state.outCaptains}
               onBid={placeBid}
               onSold={markSold}
               onUnsold={markUnsold}

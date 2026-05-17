@@ -52,6 +52,7 @@ export interface AuctionState {
     captainName: string;
     teamName: string;
   } | null;
+  outCaptains: string[];
   lastAction: string;
   timestamp: number;
 }

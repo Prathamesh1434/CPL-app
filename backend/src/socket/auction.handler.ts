@@ -58,6 +58,16 @@ export function registerAuctionHandlers(io: Server, socket: Socket) {
     }
   });
 
+  // Mark captain as out
+  socket.on('auction:out', (data: { captainId: string }) => {
+    try {
+      const state = auctionEngine.markOut(data.captainId);
+      io.emit('auction:update', state);
+    } catch (err: any) {
+      socket.emit('auction:error', { message: err.message });
+    }
+  });
+
   // Mark player as sold
   socket.on('auction:sold', async () => {
     try {

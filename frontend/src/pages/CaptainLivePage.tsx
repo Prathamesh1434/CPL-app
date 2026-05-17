@@ -11,15 +11,11 @@ import { getNextBids } from '../utils/bidding';
 
 export default function CaptainLivePage() {
   const { user } = useAuthStore();
-  const { state, initialize, placeBid, error } = useAuctionStore();
+  const { state, initialize, placeBid, markOut, error } = useAuctionStore();
   const [bidAmount, setBidAmount] = useState(0);
   const [logs, setLogs] = useState<AuctionLog[]>([]);
-  const [isOut, setIsOut] = useState(false);
 
-  useEffect(() => {
-    // Reset "OUT" status when a new player comes up
-    setIsOut(false);
-  }, [state.selectedPlayer?.id]);
+  const isOut = state.outCaptains?.includes(user?.captainId || '');
 
   const fetchLogs = () => {
     api.get('/auction/logs').then(res => setLogs(res.data.logs?.slice(0, 10) || [])).catch(() => {});
@@ -151,7 +147,7 @@ export default function CaptainLivePage() {
                       </button>
                     </div>
                     {!isOut ? (
-                      <button onClick={() => setIsOut(true)} className="w-full h-14 bg-red-500/10 text-red-400 font-bold text-lg rounded-xl border border-red-500/30 hover:bg-red-500/20 transition-all">
+                      <button onClick={() => markOut(user!.captainId!)} className="w-full h-14 bg-red-500/10 text-red-400 font-bold text-lg rounded-xl border border-red-500/30 hover:bg-red-500/20 transition-all">
                         I AM OUT
                       </button>
                     ) : (

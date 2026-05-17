@@ -30,6 +30,7 @@ class AuctionEngine {
     selectedPlayer: null,
     currentBid: 0,
     highestBidder: null,
+    outCaptains: [],
     lastAction: 'Auction engine initialized',
     timestamp: Date.now(),
   };
@@ -73,6 +74,7 @@ class AuctionEngine {
       selectedPlayer: null,
       currentBid: 0,
       highestBidder: null,
+      outCaptains: [],
       lastAction: `Auction started for group: ${group.name}`,
       timestamp: Date.now(),
     };
@@ -102,6 +104,7 @@ class AuctionEngine {
     this.state.selectedPlayer = player;
     this.state.currentBid = player.base_price;
     this.state.highestBidder = null;
+    this.state.outCaptains = [];
     this.state.status = 'player_selected';
     this.state.lastAction = `${player.name} selected from wheel`;
     this.state.timestamp = Date.now();
@@ -144,6 +147,14 @@ class AuctionEngine {
     this.state.lastAction = `${captain.name} (${captain.team_name}) bid ${amount}`;
     this.state.timestamp = Date.now();
 
+    return this.getState();
+  }
+
+  markOut(captainId: string): AuctionState {
+    if (!this.state.outCaptains.includes(captainId)) {
+      this.state.outCaptains.push(captainId);
+      this.state.timestamp = Date.now();
+    }
     return this.getState();
   }
 
@@ -206,6 +217,7 @@ class AuctionEngine {
     this.state.selectedPlayer = null;
     this.state.currentBid = 0;
     this.state.highestBidder = null;
+    this.state.outCaptains = [];
     this.state.status = this.state.wheelPool.length > 0 ? 'group_selected' : 'idle';
 
     return savedState;
@@ -240,6 +252,7 @@ class AuctionEngine {
     this.state.selectedPlayer = null;
     this.state.currentBid = 0;
     this.state.highestBidder = null;
+    this.state.outCaptains = [];
     this.state.status = this.state.wheelPool.length > 0 ? 'group_selected' : 'idle';
 
     return savedState;
@@ -254,6 +267,7 @@ class AuctionEngine {
       selectedPlayer: null,
       currentBid: 0,
       highestBidder: null,
+      outCaptains: [],
       lastAction: 'Auction reset',
       timestamp: Date.now(),
     };

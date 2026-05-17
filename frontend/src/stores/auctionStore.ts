@@ -11,6 +11,7 @@ interface AuctionStore {
   startAuction: (groupId: string) => void;
   spinWheel: () => void;
   placeBid: (captainId: string, amount: number) => void;
+  markOut: (captainId: string) => void;
   markSold: () => void;
   markUnsold: () => void;
   resetAuction: () => void;
@@ -24,6 +25,7 @@ const initialState: AuctionState = {
   selectedPlayer: null,
   currentBid: 0,
   highestBidder: null,
+  outCaptains: [],
   lastAction: '',
   timestamp: 0,
 };
@@ -96,6 +98,10 @@ export const useAuctionStore = create<AuctionStore>((set, get) => ({
 
   placeBid: (captainId: string, amount: number) => {
     socketService.emit('auction:bid', { captainId, amount });
+  },
+
+  markOut: (captainId: string) => {
+    socketService.emit('auction:out', { captainId });
   },
 
   markSold: () => {

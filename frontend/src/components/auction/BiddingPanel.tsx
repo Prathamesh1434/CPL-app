@@ -10,6 +10,7 @@ interface BiddingPanelProps {
   selectedPlayer: Player | null;
   currentBid: number;
   highestBidder: { captainId: string; captainName: string; teamName: string } | null;
+  outCaptains: string[];
   onBid: (captainId: string, amount: number) => void;
   onSold: () => void;
   onUnsold: () => void;
@@ -17,7 +18,7 @@ interface BiddingPanelProps {
 }
 
 export default function BiddingPanel({
-  selectedPlayer, currentBid, highestBidder, onBid, onSold, onUnsold, status,
+  selectedPlayer, currentBid, highestBidder, outCaptains, onBid, onSold, onUnsold, status,
 }: BiddingPanelProps) {
   const [captains, setCaptains] = useState<Captain[]>([]);
   const [selectedCaptain, setSelectedCaptain] = useState('');
@@ -124,6 +125,19 @@ export default function BiddingPanel({
               <XIcon className="w-5 h-5" /> UNSOLD
             </button>
           </div>
+          {/* Out Captains Display */}
+          {outCaptains?.length > 0 && (
+            <div className="pt-4 border-t border-white/10">
+              <p className="text-xs text-red-400 uppercase tracking-wider mb-2 text-center">Captains Out</p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {captains.filter(c => outCaptains.includes(c.id)).map(c => (
+                  <span key={c.id} className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-1 rounded-md">
+                    {c.team_name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
