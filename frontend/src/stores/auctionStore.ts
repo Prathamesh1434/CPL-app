@@ -12,6 +12,7 @@ interface AuctionStore {
   spinWheel: () => void;
   placeBid: (captainId: string, amount: number) => void;
   markOut: (captainId: string) => void;
+  undoOut: (captainId: string) => void;
   markSold: () => void;
   markUnsold: () => void;
   resetAuction: () => void;
@@ -102,6 +103,10 @@ export const useAuctionStore = create<AuctionStore>((set, get) => ({
 
   markOut: (captainId: string) => {
     socketService.emit('auction:out', { captainId });
+  },
+
+  undoOut: (captainId: string) => {
+    socketService.emit('auction:undo_out', { captainId });
   },
 
   markSold: () => {

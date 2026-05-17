@@ -115,9 +115,24 @@ router.put('/:id', authenticate, requireRole('admin'), async (req: AuthRequest, 
 router.delete('/:id', authenticate, requireRole('admin'), async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
+
+    // Fetch player to check if they were sold
+    const { data: player } = await supabase.from('players').select('*').eq('id', id).single();
+    
+    // Auto-refund captain if player was sold
+    if (player && player.status === 'sold' && player.sold_to && player.sold_price) {
+      const { data: captain } = await supabase.from('captains').select('spent').eq('id', player.sold_to).single();
+      if (captain) {
+        await supabase
+          .from('captains')
+          .update({ spent: Math.max(0, captain.spent - player.sold_price) })
+          .eq('id', player.sold_to);
+      }
+    }
+
     const { error } = await supabase.from('players').delete().eq('id', id);
     if (error) throw error;
-    res.json({ message: 'Player deleted' });
+    res.json({ message: 'Player deleted and purse refunded if applicable' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete player' });
   }

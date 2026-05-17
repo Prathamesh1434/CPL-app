@@ -11,7 +11,7 @@ import { getNextBids } from '../utils/bidding';
 
 export default function CaptainLivePage() {
   const { user } = useAuthStore();
-  const { state, initialize, placeBid, markOut, error } = useAuctionStore();
+  const { state, initialize, placeBid, markOut, undoOut, error } = useAuctionStore();
   const [bidAmount, setBidAmount] = useState(0);
   const [logs, setLogs] = useState<AuctionLog[]>([]);
 
@@ -151,8 +151,13 @@ export default function CaptainLivePage() {
                         I AM OUT
                       </button>
                     ) : (
-                      <div className="text-center p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-semibold">
-                        You are OUT for this player
+                      <div className="flex flex-col gap-2">
+                        <div className="text-center p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-semibold">
+                          You are OUT for this player
+                        </div>
+                        <button onClick={() => undoOut(user!.captainId!)} className="btn-secondary h-12 w-full text-sm font-medium hover:text-white transition-all border-dashed">
+                          Wait, Undo!
+                        </button>
                       </div>
                     )}
                   </div>

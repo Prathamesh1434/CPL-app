@@ -159,6 +159,12 @@ class AuctionEngine {
     return this.getState();
   }
 
+  undoOut(captainId: string): AuctionState {
+    this.state.outCaptains = this.state.outCaptains.filter(id => id !== captainId);
+    this.state.timestamp = Date.now();
+    return this.getState();
+  }
+
   async markSold(): Promise<AuctionState> {
     if (!this.state.selectedPlayer || !this.state.highestBidder) {
       throw new Error('No active bid to finalize');
