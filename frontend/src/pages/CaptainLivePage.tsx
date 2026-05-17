@@ -14,6 +14,12 @@ export default function CaptainLivePage() {
   const { state, initialize, placeBid, error } = useAuctionStore();
   const [bidAmount, setBidAmount] = useState(0);
   const [logs, setLogs] = useState<AuctionLog[]>([]);
+  const [isOut, setIsOut] = useState(false);
+
+  useEffect(() => {
+    // Reset "OUT" status when a new player comes up
+    setIsOut(false);
+  }, [state.selectedPlayer?.id]);
 
   const fetchLogs = () => {
     api.get('/auction/logs').then(res => setLogs(res.data.logs?.slice(0, 10) || [])).catch(() => {});
@@ -117,11 +123,16 @@ export default function CaptainLivePage() {
             <div className="glass-card p-6">
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-3 text-center">Next Valid Bids</label>
-                  <div className="grid grid-cols-4 gap-3">
-                    {getNextBids(state.currentBid).map(bidVal => (
+                  <label className="block text-sm text-gray-400 mb-3 text-center">Next Valid Bid</label>
+                  <div className="grid grid-cols-1 gap-3">
+                    {getNextBids(state.currentBid).slice(0, 1).map(bidVal => (
                       <button key={bidVal} onClick={() => setBidAmount(bidVal)}
-                        className="py-3 px-4 bg-surface-300/80 border border-white/10 rounded-xl text-white font-bold hover:border-neon-green hover:bg-surface-200 hover:text-neon-green transition-all shadow-lg text-lg flex items-center justify-center">
+                        disabled={isOut}
+                        className={`py-3 px-4 border rounded-xl font-bold transition-all shadow-lg text-lg flex items-center justify-center
+                          ${isOut 
+                            ? 'bg-surface-300/50 text-gray-500 border-white/5 cursor-not-allowed' 
+                            : 'bg-surface-300/80 border-white/10 text-white hover:border-neon-green hover:bg-surface-200 hover:text-neon-green'
+                          }`}>
                         ₹{bidVal}
                       </button>
                     ))}
@@ -130,12 +141,24 @@ export default function CaptainLivePage() {
 
                 <div>
                   <label className="block text-sm text-gray-400 mb-3 text-center">Place Custom Bid</label>
-                  <div className="flex gap-3">
-                    <input type="number" value={bidAmount} onChange={e => setBidAmount(parseInt(e.target.value) || 0)}
-                      className="input-field text-xl font-bold text-center flex-1 h-14" min={state.currentBid + 1} />
-                    <button onClick={handleBid} className="btn-primary h-14 px-8 text-lg font-bold shadow-[0_0_20px_rgba(34,197,94,0.4)]">
-                      PLACE BID
-                    </button>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex gap-3">
+                      <input type="number" value={bidAmount} onChange={e => setBidAmount(parseInt(e.target.value) || 0)}
+                        disabled={isOut}
+                        className="input-field text-xl font-bold text-center flex-1 h-14 disabled:opacity-50" min={state.currentBid + 1} />
+                      <button onClick={handleBid} disabled={isOut} className="btn-primary h-14 px-8 text-lg font-bold shadow-[0_0_20px_rgba(34,197,94,0.4)] disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed">
+                        PLACE BID
+                      </button>
+                    </div>
+                    {!isOut ? (
+                      <button onClick={() => setIsOut(true)} className="w-full h-14 bg-red-500/10 text-red-400 font-bold text-lg rounded-xl border border-red-500/30 hover:bg-red-500/20 transition-all">
+                        I AM OUT
+                      </button>
+                    ) : (
+                      <div className="text-center p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-semibold">
+                        You are OUT for this player
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

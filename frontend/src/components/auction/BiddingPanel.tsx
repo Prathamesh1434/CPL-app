@@ -92,11 +92,11 @@ export default function BiddingPanel({
 
           {/* Increment Buttons */}
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Next Valid Bids</label>
-            <div className="grid grid-cols-4 gap-2">
-              {getNextBids(currentBid).map(bidVal => (
+            <label className="block text-sm text-gray-400 mb-2">Next Valid Bid</label>
+            <div className="grid grid-cols-1 gap-2">
+              {getNextBids(currentBid).slice(0, 1).map(bidVal => (
                 <button key={bidVal} onClick={() => setBidAmount(bidVal)}
-                  className="py-2 px-3 bg-surface-300/80 border border-white/10 rounded-lg text-white font-medium hover:border-neon-green/30 hover:bg-surface-200 transition-all text-sm">
+                  className="py-3 px-3 bg-surface-300/80 border border-white/10 rounded-lg text-white font-bold hover:border-neon-green/30 hover:bg-surface-200 transition-all text-lg">
                   ₹{bidVal}
                 </button>
               ))}
