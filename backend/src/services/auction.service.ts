@@ -17,6 +17,7 @@ export interface AuctionState {
   selectedPlayer: Player | null;
   currentBid: number;
   highestBidder: { captainId: string; captainName: string; teamName: string } | null;
+  outCaptains: string[];
   lastAction: string;
   timestamp: number;
 }
